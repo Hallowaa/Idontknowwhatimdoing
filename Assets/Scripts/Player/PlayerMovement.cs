@@ -6,20 +6,13 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
 
-
-    bool isOnCooldown = false;
-    public float fireTimer;
-    public float fireCooldown = 5f;
-
-    public bool isGroundedd;
-
     [Header("Basics")]
     public float speed = 7f;
     public float gravity = -30f;
     public float jumpHeight = 3f;
     Vector3 move; // Input
-    Vector3 moveDir;
-    Vector3 velocity; 
+    Vector3 moveDir; // Direction for dashing and WallJumping
+    Vector3 velocity; // Only for gravity/ upward force
     float x;
     float z;
 
@@ -45,15 +38,6 @@ public class PlayerMovement : MonoBehaviour
 
         HandleInput();
 
-        if (isOnCooldown)
-        {
-            fireTimer += Time.deltaTime;
-
-            if (fireTimer >= fireCooldown)
-            {
-                isOnCooldown = false;
-            }
-        }
         Movement();
 
         HandleDashing();
@@ -83,14 +67,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             Jump();
-        }
-
-        if (Input.GetButton("Fire1") && !isOnCooldown)
-        {
-            Singleton.Instance.FirstSpellInstantiate();
-            isOnCooldown = true;
-            fireTimer = 0f;
-        }
+        }        
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -107,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleDashing()
     {
-        if(x == 0f && z >= 0f)
+        if(x == 0f && z >= 0f) // If the player is not pressing anything, or is only going forward, apply camera upward rotation to its dash direction
         {
             moveDir = move.normalized + Singleton.Instance.playerCamera.transform.forward * dashStrength * 1.34f;
         }
@@ -138,15 +115,15 @@ public class PlayerMovement : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity); 
         }
-        else if (isStickingToWall)
+        else if (isStickingToWall) // If the player is sticking to a wall, just make it dash if it presses jump
         {
             velocity.y = 0f;
             isStickingToWall = false;
             timeSpentDashing = 0f;
-            dash = true;
+            dash = true; // TODO make a better walljump
         }
     }
-
+    // Apply basic movement
     void Movement()
     {
         move = transform.right * x + transform.forward * z;
@@ -155,17 +132,17 @@ public class PlayerMovement : MonoBehaviour
     }
     public bool isGrounded()
     {
-        if (controller.isGrounded)
+        if (controller.isGrounded) // Default ground check
         {
             velocity.y = 0f;
             
             return true;
         }
 
-        Vector3 bottom = controller.transform.position - new Vector3(0, controller.height / 2, 0);
+        Vector3 bottom = controller.transform.position - new Vector3(0, controller.height / 2, 0); // Sets a point at the bottom of the player model
 
         RaycastHit hit;
-        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.4f) && velocity.y < 0)
+        if (Physics.Raycast(bottom, Vector3.down, out hit, 0.4f) && velocity.y < 0) // Raycasts toward the ground, if it hits, move the player there - for bumpy ground and slopes
         {
             controller.Move(new Vector3(0, -hit.distance, 0));
             return true;
@@ -174,6 +151,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
+    // Check if the player is high enough to walljump, to remove awkwardness
     public bool highEnoughCheck()
     {
         Vector3 bottom = controller.transform.position - new Vector3(0, controller.height / 2, 0);
@@ -189,6 +167,7 @@ public class PlayerMovement : MonoBehaviour
         }       
     }
 
+    // If the player presses Ctrl when walljumping, refuse to walljump for a while
     void RefuseWallSticking()
     {
         if (!canStickToWall)

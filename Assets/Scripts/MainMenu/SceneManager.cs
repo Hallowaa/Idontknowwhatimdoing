@@ -6,7 +6,7 @@ public class SceneManager : MonoBehaviour
 {
     [SerializeField] private Canvas mainCanvas;
     [SerializeField] private Canvas settingsCanvas;
-    
+    [SerializeField] private Animator camAnim;
 
     // Start is called before the first frame update
     void Start()
@@ -29,12 +29,24 @@ public class SceneManager : MonoBehaviour
     public void GoToSettingsMenu()
     {
         Invoke("TurnOnSettingsCanvas", 1.30f);
-        Camera.main.GetComponent<Animator>().SetTrigger("TransferToSettings");
+        camAnim.SetTrigger("TransferToSettings");
         mainCanvas.enabled = false;
+    }
+
+    public void GoToMainMenu()
+    {
+        Invoke("TurnOnMainMenuCanvas", 1.30f);
+        camAnim.SetTrigger("TransferToMain");
+        settingsCanvas.enabled = false;
     }
     
     private void TurnOnSettingsCanvas()
     {
         settingsCanvas.enabled = true;
+    }
+
+    private void TurnOnMainMenuCanvas()
+    {
+        mainCanvas.enabled = true;
     }
 }

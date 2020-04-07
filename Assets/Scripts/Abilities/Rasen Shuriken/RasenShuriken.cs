@@ -6,14 +6,14 @@ public class RasenShuriken : MonoBehaviour
 {
 
     public float rotationSpeed = 720f;
-    Throw rasenShurikenParent;
+    ThrowRasenShuriken rasenShurikenParent;
     Vector3 scaleChange;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rasenShurikenParent = GetComponentInParent<Throw>();
+        rasenShurikenParent = GetComponentInParent<ThrowRasenShuriken>();
         scaleChange = new Vector3(1.5f, 1.5f, 1.5f);
     }
 

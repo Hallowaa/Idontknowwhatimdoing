@@ -13,7 +13,7 @@ public class Singleton : MonoBehaviour
 
     public GameObject throwPoint;
 
-    public GameObject shuriken;
+    public GameObject kunai;
 
     public GameObject rasenShuriken;
 
@@ -39,9 +39,9 @@ public class Singleton : MonoBehaviour
         throwPoint = GameObject.Find("Throw Point");
     }
 
-    public void FirstSpellInstantiate()
+    public void KunaiInstantiate()
     {
-        GameObject Shuriken = Instantiate(shuriken, shootingPoint.transform.position, playerCamera.transform.rotation) as GameObject;
+        GameObject Shuriken = Instantiate(kunai, shootingPoint.transform.position, playerCamera.transform.rotation) as GameObject;
     }
 
     public void RasenShurikenInstatiate()
